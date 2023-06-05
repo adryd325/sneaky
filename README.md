@@ -20,3 +20,6 @@ After their first join, players will see the real MOTD, server icon, and online 
 An attack vector against servers with server icons is to repeatedly ping that server to get it to send the icon. If a server is whitelisted, it can prevent random people from attacking a server in this way. 
 
 I plan to eventually implement handshake ratelimits to make this kind of attack harder on all servers, not just whitelisted ones.
+
+## Acknowledgements
+After making this, I realised such a feature already exists in [Fabrication](https://falsehoodmc.github.io/#utility.ping_privacy), so this should not be seen as the originator of this idea
