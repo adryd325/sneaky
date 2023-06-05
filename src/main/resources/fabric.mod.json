@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "sneaky",
+  "version": "${version}",
+
+  "name": "Sneaky",
+  "description": "Hide your server from server scanners!",
+  "authors": [
+    "adryd"
+  ],
+  "contact": {
+    "homepage": "https://fabricmc.net/",
+    "sources": "https://github.com/FabricMC/fabric-example-mod"
+  },
+
+  "license": "MIT",
+  "icon": "assets/sneaky/icon.png",
+
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.adryd.sneaky.Sneaky"
+    ]
+  },
+  "mixins": [
+    "sneaky.mixins.json"
+  ],
+
+  "depends": {
+    "fabricloader": ">=0.14.19",
+    "fabric-api": "*",
+    "minecraft": "1.19.4",
+    "java": ">=17"
+  },
+  "suggests": {
+    "another-mod": "*"
+  }
+}
