@@ -15,9 +15,11 @@ public class IPList {
     private static final long THIRTY_DAYS_MS = 2592000000l;
 
     private Map<String, Long> ipList;
+    private boolean loaded;
 
     IPList() {
         this.ipList = new HashMap<>();
+        this.loaded = false;
     }
 
     public void loadFromFile() {
@@ -37,15 +39,21 @@ public class IPList {
                 }
             }
         } catch (NoSuchFileException e) {
+            this.loaded = true;
             this.saveToFile();
         } catch (IOException e) {
             Sneaky.LOGGER.warn("Failed to read allowed IPs list:", e);
         } catch (NumberFormatException e) {
             Sneaky.LOGGER.warn("Failed to parse allowed IPs list:", e);
         }
+        this.loaded = true;
     }
 
-    private void saveToFile() {
+    public void saveToFile() {
+        // Prevent overwriting the file with nothing if we haven't loaded it yet
+        if (!this.loaded) {
+            return;
+        }
         StringBuilder builder = new StringBuilder();
         builder.append("# This file contains allowed IP addresses and their last login date in miliseconds.\n");
         builder.append("# ipAddress,lastLoginMiliseconds\n");
@@ -80,7 +88,6 @@ public class IPList {
 
     public void addToIPList(SocketAddress address) {
         this.ipList.put(this.stringifyAddress(address), System.currentTimeMillis());
-        this.saveToFile();
     }
 
     public boolean canPing(SocketAddress address) {

@@ -16,7 +16,7 @@
   "license": "MIT",
   "icon": "assets/sneaky/icon.png",
 
-  "environment": "*",
+  "environment": "SERVER",
   "entrypoints": {
     "main": [
       "com.adryd.sneaky.Sneaky"
