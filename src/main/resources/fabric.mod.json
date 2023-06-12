@@ -16,7 +16,7 @@
   "license": "MIT",
   "icon": "assets/sneaky/icon.png",
 
-  "environment": "SERVER",
+  "environment": "server",
   "entrypoints": {
     "main": [
       "com.adryd.sneaky.Sneaky"
@@ -28,7 +28,7 @@
 
   "depends": {
     "fabricloader": ">=0.14.19",
-    "minecraft": "1.19.4",
+    "minecraft": ">=1.20-rc.1 <=1.20.1",
     "java": ">=17"
   },
   "suggests": {
