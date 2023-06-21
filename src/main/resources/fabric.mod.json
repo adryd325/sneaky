@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
-  "id": "sneaky",
+  "id": "sneakyserver",
   "version": "${version}",
 
-  "name": "Sneaky",
+  "name": "Sneaky Server",
   "description": "Hide your server from server scanners!",
   "authors": [
     "adryd"

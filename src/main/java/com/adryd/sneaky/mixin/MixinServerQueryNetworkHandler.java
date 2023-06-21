@@ -1,5 +1,6 @@
 package com.adryd.sneaky.mixin;
 
+import com.adryd.sneaky.Config;
 import com.adryd.sneaky.IPList;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.server.ServerMetadata;
@@ -17,7 +18,9 @@ import java.util.Optional;
 public class MixinServerQueryNetworkHandler {
 
     @Mutable
-    @Shadow @Final private ServerMetadata metadata;
+    @Shadow
+    @Final
+    private ServerMetadata metadata;
 
     @Unique
     private ServerMetadata sneakyMetadata = new ServerMetadata(
@@ -27,10 +30,21 @@ public class MixinServerQueryNetworkHandler {
             Optional.empty(),
             true
     );
-    @Inject(method = "<init>", at=@At("TAIL"))
+
+    @Inject(method = "<init>", at = @At("TAIL"))
     private void swapServerInfo(ServerMetadata metadata, ClientConnection connection, CallbackInfo ci) {
         if (!IPList.INSTANCE.canPing(connection.getAddress())) {
-            this.metadata = sneakyMetadata;
+            if (Config.INSTANCE.getHideServerPingData()) {
+                this.metadata = sneakyMetadata;
+            } else if (Config.INSTANCE.getOnlyHidePlayerList()) {
+                this.metadata = new ServerMetadata(
+                        this.metadata.description(),
+                        Optional.of(new ServerMetadata.Players(20, 0, List.of())),
+                        this.metadata.version(),
+                        this.metadata.favicon(),
+                        this.metadata.secureChatEnforced()
+                );
+            }
         }
     }
 }

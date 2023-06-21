@@ -1,5 +1,6 @@
 package com.adryd.sneaky;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.SocketAddress;
 import java.nio.file.Files;
@@ -11,7 +12,8 @@ import java.util.Map;
 
 public class IPList {
     public static final IPList INSTANCE = new IPList();
-    private static final Path FILE = Paths.get("allowed-ping-ips.csv", new String[0]);;
+    private static final File OLD_FILE = Paths.get("allowed-ping-ips.csv", new String[0]).toFile();
+    private static final File FILE = new File(Sneaky.CONFIG_DIR, "allowed-ping-ips.csv");
     private static final long THIRTY_DAYS_MS = 2592000000l;
 
     private Map<String, Long> ipList;
@@ -22,9 +24,15 @@ public class IPList {
         this.loaded = false;
     }
 
+    public void migrateConfig() {
+        if (OLD_FILE.exists() && !FILE.exists() && Sneaky.CONFIG_DIR.exists()) {
+            OLD_FILE.renameTo(FILE);
+        }
+    }
+
     public void loadFromFile() {
         try {
-            String data = Files.readString(FILE);
+            String data = Files.readString(FILE.toPath());
             if (data == null) {
                 return;
             }
@@ -42,9 +50,9 @@ public class IPList {
             this.loaded = true;
             this.saveToFile();
         } catch (IOException e) {
-            Sneaky.LOGGER.warn("Failed to read allowed IPs list:", e);
+            Sneaky.LOGGER.warn("[" + Sneaky.MOD_ID + " ] Failed to read allowed IPs list:", e);
         } catch (NumberFormatException e) {
-            Sneaky.LOGGER.warn("Failed to parse allowed IPs list:", e);
+            Sneaky.LOGGER.warn("[" + Sneaky.MOD_ID + " ] Failed to parse allowed IPs list:", e);
         }
         this.loaded = true;
     }
@@ -69,29 +77,18 @@ public class IPList {
             }
         });
         try {
-            Files.writeString(FILE, builder.toString());
+            Files.writeString(FILE.toPath(), builder.toString());
         } catch (IOException e) {
-            Sneaky.LOGGER.error("Failed to save allowed IPs list:", e);
+            Sneaky.LOGGER.error("[" + Sneaky.MOD_ID + " ] Failed to save allowed IPs list:", e);
         }
-    }
-
-    private String stringifyAddress(SocketAddress address) {
-        String string = address.toString();
-        if (string.contains("/")) {
-            string = string.substring(string.indexOf(47) + 1);
-        }
-        if (string.contains(":")) {
-            string = string.substring(0, string.indexOf(58));
-        }
-        return string;
     }
 
     public void addToIPList(SocketAddress address) {
-        this.ipList.put(this.stringifyAddress(address), System.currentTimeMillis());
+        this.ipList.put(Sneaky.stringifyAddress(address), System.currentTimeMillis());
     }
 
     public boolean canPing(SocketAddress address) {
-        String ip = this.stringifyAddress(address);
+        String ip = Sneaky.stringifyAddress(address);
         if (this.ipList.containsKey(ip)) {
             if (System.currentTimeMillis() - this.ipList.get(ip) < THIRTY_DAYS_MS || this.ipList.get(ip) == 0) {
                 return true;
