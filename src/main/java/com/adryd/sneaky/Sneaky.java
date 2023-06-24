@@ -54,13 +54,13 @@ public class Sneaky implements ModInitializer {
 		}
 		String addressStr = stringifyAddress(address);
 		int attempts = rateLimitMap.get(addressStr);
-		if (attempts != null) {
+		if (attempts == null) {
+			rateLimitMap.put(addressStr, 1);
+			return true;
+		} else {
 			attempts++;
 			rateLimitMap.put(addressStr, attempts);
 			return attempts < Config.INSTANCE.getNewConnectionRateLimit();
-		} else {
-			rateLimitMap.put(addressStr, 1);
-			return true;
 		}
 	}
 
