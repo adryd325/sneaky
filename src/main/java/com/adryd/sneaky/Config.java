@@ -1,9 +1,5 @@
 package com.adryd.sneaky;
 
-import net.fabricmc.fabric.api.util.TriState;
-import net.fabricmc.fabric.impl.client.indigo.IndigoMixinConfigPlugin;
-import net.fabricmc.fabric.impl.client.indigo.renderer.aocalc.AoConfig;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -29,6 +25,7 @@ public class Config {
             }
         }
     }
+
     private static int asInteger(String property, int defValue) {
         if (property == null || property.isEmpty()) {
             return defValue;
