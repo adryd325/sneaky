@@ -43,6 +43,7 @@ public class Config {
     private boolean dontLogClientDisconnects = false;
     private boolean dontLogServerDisconnects = false;
     private boolean rateLimitNewConnections = true;
+    private boolean disableAllPingsUntilLogin = false;
     private int newConnectionRateLimit = 5;
 
 
@@ -62,7 +63,8 @@ public class Config {
         dontLogClientDisconnects = asBoolean((String) properties.computeIfAbsent("dont-log-unauthed-client-disconnects", (a) -> "false"), false);
         dontLogServerDisconnects = asBoolean((String) properties.computeIfAbsent("dont-log-unauthed-server-disconnects", (a) -> "false"), false);
         rateLimitNewConnections = asBoolean((String) properties.computeIfAbsent("rate-limit-new-connections", (a) -> "true"), true);
-        newConnectionRateLimit = asInteger((String) properties.computeIfAbsent("new-connection-rate-limit", (a) -> "5"), 5);
+        newConnectionRateLimit = asInteger((String) properties.computeIfAbsent("new-connection-rate-limit", (a) -> "6"), 6);
+        disableAllPingsUntilLogin = asBoolean((String) properties.computeIfAbsent("disable-query-until-login", (a) -> "false"), false);
 
         try (FileOutputStream stream = new FileOutputStream(FILE)) {
             properties.store(stream, "Sneaky Server properties file\n" +
@@ -94,5 +96,9 @@ public class Config {
 
     public int getNewConnectionRateLimit() {
         return newConnectionRateLimit;
+    }
+
+    public boolean getDisableAllPingsUntilLogin() {
+        return disableAllPingsUntilLogin;
     }
 }
