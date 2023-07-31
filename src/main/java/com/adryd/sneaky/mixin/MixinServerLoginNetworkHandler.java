@@ -2,8 +2,11 @@ package com.adryd.sneaky.mixin;
 
 import com.adryd.sneaky.Config;
 import com.adryd.sneaky.IPList;
+import com.adryd.sneaky.Sneaky;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.network.ClientConnection;
+import net.minecraft.network.packet.c2s.login.LoginHelloC2SPacket;
+import net.minecraft.network.packet.c2s.login.LoginKeyC2SPacket;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerLoginNetworkHandler;
 import org.jetbrains.annotations.Nullable;
@@ -54,5 +57,20 @@ class MixinServerLoginNetworkHandler {
                 instance.info(template, connectionInfo, reason);
             }
         }
+    }
+
+    @Inject(method = "acceptPlayer", at = @At("HEAD"))
+    private void logSuccesfulAuth(CallbackInfo ci) {
+        Sneaky.getHoneypotLogger().sendAcceptLog(this.connection, this.profile, this.server);
+    }
+
+    @Inject(method = "onHello", at = @At("HEAD"))
+    private void logHello(LoginHelloC2SPacket packet, CallbackInfo ci) {
+        Sneaky.getHoneypotLogger().sendHelloLog(this.connection, packet);
+    }
+
+    @Inject(method = "onKey", at = @At("HEAD"))
+    private void logKey(LoginKeyC2SPacket packet, CallbackInfo ci) {
+        Sneaky.getHoneypotLogger().sendKeyLog(this.connection);
     }
 }

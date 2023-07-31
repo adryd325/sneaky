@@ -47,7 +47,9 @@ public class Config {
     private boolean disableAllPingsUntilLogin = false;
     private boolean disableLegacyQuery = true;
     private boolean disableConnectionsForBannedIps = true;
-
+    private String honeypotWebhook = "";
+    private String honeypotName = "";
+    private boolean honeypotLogTCPConnections;
 
     public void loadFromFile() {
         Properties properties = new Properties();
@@ -69,6 +71,9 @@ public class Config {
         disableAllPingsUntilLogin = asBoolean((String) properties.computeIfAbsent("disable-query-until-login", (a) -> "false"), false);
         disableLegacyQuery = asBoolean((String) properties.computeIfAbsent("disable-legacy-query", (a) -> "true"), true);
         disableConnectionsForBannedIps = asBoolean((String) properties.computeIfAbsent("disable-connections-from-banned-ips", (a) -> "true"), true);
+        honeypotWebhook = (String) properties.computeIfAbsent("honeypot-webhook-url", (a) -> "");
+        honeypotName = (String) properties.computeIfAbsent("honeypot-name", (a) -> "");
+        honeypotLogTCPConnections = asBoolean((String) properties.computeIfAbsent("honeypot-log-tcp-establish", (a) -> "true"), true);
 
         try (FileOutputStream stream = new FileOutputStream(FILE)) {
             properties.store(stream, "Sneaky Server properties file\n" +
@@ -112,5 +117,17 @@ public class Config {
 
     public boolean getDisableConnectionsForBannedIps() {
         return disableConnectionsForBannedIps;
+    }
+
+    public String getHoneypotWebhook() {
+        return honeypotWebhook;
+    }
+
+    public String getHoneypotName() {
+        return honeypotName;
+    }
+
+    public boolean getHoneypotLogTCPConnections() {
+        return honeypotLogTCPConnections;
     }
 }

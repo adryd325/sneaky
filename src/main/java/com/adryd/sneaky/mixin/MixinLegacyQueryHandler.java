@@ -2,6 +2,7 @@ package com.adryd.sneaky.mixin;
 
 import com.adryd.sneaky.Config;
 import com.adryd.sneaky.IPList;
+import com.adryd.sneaky.Sneaky;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -60,6 +61,7 @@ public abstract class MixinLegacyQueryHandler extends ChannelInboundHandlerAdapt
 
     @Inject(method = "channelRead", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/LegacyQueryHandler;reply(Lio/netty/channel/ChannelHandlerContext;Lio/netty/buffer/ByteBuf;)V", ordinal = 0))
     private void send13(ChannelHandlerContext ctx, Object msg, CallbackInfo ci) {
+        Sneaky.getHoneypotLogger().sendLegacyQueryLog("<1.3.x", ctx.channel().remoteAddress());
         String pingData = this.get13PingData(ctx.channel().remoteAddress());
         this.reply(ctx, this.toBuffer(pingData));
     }
@@ -67,6 +69,7 @@ public abstract class MixinLegacyQueryHandler extends ChannelInboundHandlerAdapt
 
     @Inject(method = "channelRead", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/LegacyQueryHandler;reply(Lio/netty/channel/ChannelHandlerContext;Lio/netty/buffer/ByteBuf;)V", ordinal = 1))
     private void send1415(ChannelHandlerContext ctx, Object msg, CallbackInfo ci) {
+        Sneaky.getHoneypotLogger().sendLegacyQueryLog("1.4-1.5.x", ctx.channel().remoteAddress());
         String pingData = this.get14to16PingData(ctx.channel().remoteAddress());
         this.reply(ctx, this.toBuffer(pingData));
     }
@@ -74,6 +77,7 @@ public abstract class MixinLegacyQueryHandler extends ChannelInboundHandlerAdapt
 
     @Inject(method = "channelRead", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/LegacyQueryHandler;reply(Lio/netty/channel/ChannelHandlerContext;Lio/netty/buffer/ByteBuf;)V", ordinal = 2))
     private void send16(ChannelHandlerContext ctx, Object msg, CallbackInfo ci) {
+        Sneaky.getHoneypotLogger().sendLegacyQueryLog("1.6", ctx.channel().remoteAddress());
         String pingData = this.get14to16PingData(ctx.channel().remoteAddress());
         this.reply(ctx, this.toBuffer(pingData));
     }

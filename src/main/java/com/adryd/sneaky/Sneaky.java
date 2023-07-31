@@ -13,6 +13,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Sneaky implements ModInitializer {
     public static final String MOD_ID = "sneakyserver";
@@ -27,6 +28,7 @@ public class Sneaky implements ModInitializer {
     private static long rateLimitUpdateSecond = System.currentTimeMillis();
 
     private static MinecraftServer server;
+    private static HoneypotLogger honeypotLogger;
 
     static {
         ModMetadata metadata = loader.getModContainer(MOD_ID).orElseThrow(RuntimeException::new).getMetadata();
@@ -74,7 +76,6 @@ public class Sneaky implements ModInitializer {
         }
     }
 
-    @Override
     public void onInitialize() {
         // This code runs as soon as Minecraft is in a mod-load-ready state.
         // However, some things (like resources) may still be uninitialized.
@@ -89,5 +90,12 @@ public class Sneaky implements ModInitializer {
         IPList.INSTANCE.migrateConfig();
         IPList.INSTANCE.loadFromFile();
         Config.INSTANCE.loadFromFile();
+        if (!Objects.equals(Config.INSTANCE.getHoneypotWebhook(), "")) {
+            honeypotLogger = new HoneypotLogger(Config.INSTANCE.getHoneypotWebhook(), Config.INSTANCE.getHoneypotName());
+        }
+    }
+
+    public static HoneypotLogger getHoneypotLogger() {
+        return honeypotLogger;
     }
 }

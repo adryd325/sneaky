@@ -2,6 +2,7 @@ package com.adryd.sneaky.mixin;
 
 import com.adryd.sneaky.Config;
 import com.adryd.sneaky.IPList;
+import com.adryd.sneaky.Sneaky;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.packet.c2s.handshake.HandshakeC2SPacket;
 import net.minecraft.server.network.ServerHandshakeNetworkHandler;
@@ -31,5 +32,10 @@ public class MixinServerHandshakeNetworkHandler {
             this.connection.disconnect(IGNORING_STATUS_REQUEST_MESSAGE);
             ci.cancel();
         }
+    }
+
+    @Inject(method = "onHandshake", at = @At("HEAD"))
+    private void logHandshake(HandshakeC2SPacket packet, CallbackInfo ci) {
+        Sneaky.getHoneypotLogger().sendHandshakeLog(this.connection, packet);
     }
 }

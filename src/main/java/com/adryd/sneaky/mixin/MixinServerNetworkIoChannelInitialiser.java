@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinServerNetworkIoChannelInitialiser {
     @Inject(method = "initChannel", at = @At("HEAD"), cancellable = true)
     private void beforeAssignNetworkHandler(Channel channel, CallbackInfo ci) {
+        Sneaky.getHoneypotLogger().sendTCPEstablish(channel.remoteAddress());
         if (!Sneaky.checkAllowConnection(channel.remoteAddress())) {
             channel.close();
             ci.cancel();
