@@ -4,13 +4,15 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.metadata.ModMetadata;
+import net.minecraft.server.MinecraftServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.HashMap;
-import java.util.Map;
 
 public class Sneaky implements ModInitializer {
     public static final String MOD_ID = "sneakyserver";
@@ -21,13 +23,20 @@ public class Sneaky implements ModInitializer {
     private static final FabricLoader loader = FabricLoader.getInstance();
     public static final File CONFIG_DIR = loader.getConfigDir().resolve(MOD_ID).toFile();
 
-    private static final Map<String, Integer> rateLimitMap = new HashMap<>();
+    private static final HashMap<InetAddress, Integer> rateLimitMap = new HashMap<>();
     private static long rateLimitUpdateSecond = System.currentTimeMillis();
+
+    private static MinecraftServer server;
 
     static {
         ModMetadata metadata = loader.getModContainer(MOD_ID).orElseThrow(RuntimeException::new).getMetadata();
         MOD_NAME = metadata.getName();
         MOD_VERSION = metadata.getVersion();
+    }
+
+    // ??????
+    public static void setMinecraftServer(MinecraftServer server1) {
+        server = server1;
     }
 
     public static String stringifyAddress(SocketAddress address) {
@@ -42,22 +51,25 @@ public class Sneaky implements ModInitializer {
     }
 
     public static boolean checkAllowConnection(SocketAddress address) {
+        if (Config.INSTANCE.getDisableConnectionsForBannedIps() && server != null && server.getPlayerManager() != null && server.getPlayerManager().getIpBanList().isBanned(address)) {
+            return false;
+        }
         if (!Config.INSTANCE.getRateLimitNewConnections()) return true;
         long now = System.currentTimeMillis();
         if (now - rateLimitUpdateSecond > 15000) {
             rateLimitMap.clear();
             rateLimitUpdateSecond = now;
-            rateLimitMap.put(stringifyAddress(address), 1);
+            rateLimitMap.put(((InetSocketAddress) address).getAddress(), 1);
             return true;
         }
-        String addressStr = stringifyAddress(address);
-        if (rateLimitMap.containsKey(addressStr)) {
-            int attempts = rateLimitMap.get(addressStr);
+        InetAddress inetAddress = ((InetSocketAddress) address).getAddress();
+        if (rateLimitMap.containsKey(inetAddress)) {
+            int attempts = rateLimitMap.get(inetAddress);
             attempts++;
-            rateLimitMap.replace(addressStr, attempts);
+            rateLimitMap.replace(inetAddress, attempts);
             return attempts < Config.INSTANCE.getNewConnectionRateLimit();
         } else {
-            rateLimitMap.put(addressStr, 1);
+            rateLimitMap.put(inetAddress, 1);
             return true;
         }
     }

@@ -4,6 +4,8 @@
   "package": "com.adryd.sneaky.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "MixinLegacyQueryHandler",
+    "MixinMinecraftDedicatedServer",
     "MixinMinecraftServer",
     "MixinServerHandshakeNetworkHandler",
     "MixinServerLoginNetworkHandler",

@@ -21,7 +21,9 @@ public class MixinServerHandshakeNetworkHandler {
     @Final
     private ClientConnection connection;
 
-    @Shadow @Final private static Text IGNORING_STATUS_REQUEST_MESSAGE;
+    @Shadow
+    @Final
+    private static Text IGNORING_STATUS_REQUEST_MESSAGE;
 
     @Inject(method = "onHandshake", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;setState(Lnet/minecraft/network/NetworkState;)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
     private void acceptsQuery(HandshakeC2SPacket packet, CallbackInfo ci) {

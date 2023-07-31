@@ -43,8 +43,10 @@ public class Config {
     private boolean dontLogClientDisconnects = false;
     private boolean dontLogServerDisconnects = false;
     private boolean rateLimitNewConnections = true;
-    private boolean disableAllPingsUntilLogin = false;
     private int newConnectionRateLimit = 5;
+    private boolean disableAllPingsUntilLogin = false;
+    private boolean disableLegacyQuery = true;
+    private boolean disableConnectionsForBannedIps = true;
 
 
     public void loadFromFile() {
@@ -65,12 +67,14 @@ public class Config {
         rateLimitNewConnections = asBoolean((String) properties.computeIfAbsent("rate-limit-new-connections", (a) -> "true"), true);
         newConnectionRateLimit = asInteger((String) properties.computeIfAbsent("new-connection-rate-limit", (a) -> "6"), 6);
         disableAllPingsUntilLogin = asBoolean((String) properties.computeIfAbsent("disable-query-until-login", (a) -> "false"), false);
+        disableLegacyQuery = asBoolean((String) properties.computeIfAbsent("disable-legacy-query", (a) -> "true"), true);
+        disableConnectionsForBannedIps = asBoolean((String) properties.computeIfAbsent("disable-connections-from-banned-ips", (a) -> "true"), true);
 
         try (FileOutputStream stream = new FileOutputStream(FILE)) {
             properties.store(stream, "Sneaky Server properties file\n" +
-                    "Please read https://modrinth.com/mod/sneaky-server for more information, Not every config option is straight forward");
+                    "Please read https://github.com/adryd325/sneaky for more information, Not every config option is straight forward");
         } catch (IOException e) {
-            Sneaky.LOGGER.warn("[\" + Sneaky.MOD_ID + \"] Could not write config '" + FILE.getAbsolutePath() + "'", e);
+            Sneaky.LOGGER.warn("[" + Sneaky.MOD_ID + "] Could not write config '" + FILE.getAbsolutePath() + "'", e);
         }
     }
 
@@ -100,5 +104,13 @@ public class Config {
 
     public boolean getDisableAllPingsUntilLogin() {
         return disableAllPingsUntilLogin;
+    }
+
+    public boolean getDisableLegacyQuery() {
+        return disableLegacyQuery;
+    }
+
+    public boolean getDisableConnectionsForBannedIps() {
+        return disableConnectionsForBannedIps;
     }
 }
