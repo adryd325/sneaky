@@ -47,7 +47,7 @@ public class IPList {
             }
         } catch (NoSuchFileException e) {
             this.loaded = true;
-            this.saveToFile();
+            this.saveToFile(true);
         } catch (IOException e) {
             Sneaky.LOGGER.warn("[" + Sneaky.MOD_ID + " ] Failed to read allowed IPs list:", e);
         } catch (NumberFormatException e) {
@@ -56,15 +56,22 @@ public class IPList {
         this.loaded = true;
     }
 
-    public void saveToFile() {
+    public void saveToFile(boolean newFile) {
         // Prevent overwriting the file with nothing if we haven't loaded it yet
         if (!this.loaded) {
             return;
         }
         StringBuilder builder = new StringBuilder();
         builder.append("# This file contains allowed IP addresses and their last login date in miliseconds.\n");
-        builder.append("# ipAddress,lastLoginMiliseconds\n");
-        builder.append("#127.0.0.1,0\n");
+        builder.append("# Setting lastLoginDate to 0 makes an IP never expire.\n");
+        builder.append("#ipAddress,lastLoginMiliseconds\n");
+
+        if (newFile) {
+            // Allow localhost to ping
+            // https://github.com/itzg/docker-minecraft-server/issues/2312
+            builder.append("127.0.0.1,0\n");
+            builder.append("0:0:0:0:0:0:0:1%0,0\n");
+        }
 
         long writeTime = System.currentTimeMillis();
         this.ipList.forEach((ip, lastLogin) -> {
