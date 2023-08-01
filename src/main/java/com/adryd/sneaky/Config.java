@@ -46,7 +46,7 @@ public class Config {
     private int newConnectionRateLimit = 5;
     private boolean disableAllPingsUntilLogin = false;
     private boolean disableLegacyQuery = true;
-    private boolean disableConnectionsForBannedIps = true;
+    private boolean disableConnectionsForBannedIps = false;
     private String honeypotWebhook = "";
     private String honeypotName = "";
     private boolean honeypotLogTCPConnections;
@@ -70,7 +70,7 @@ public class Config {
         newConnectionRateLimit = asInteger((String) properties.computeIfAbsent("new-connection-rate-limit", (a) -> "6"), 6);
         disableAllPingsUntilLogin = asBoolean((String) properties.computeIfAbsent("disable-query-until-login", (a) -> "false"), false);
         disableLegacyQuery = asBoolean((String) properties.computeIfAbsent("disable-legacy-query", (a) -> "true"), true);
-        disableConnectionsForBannedIps = asBoolean((String) properties.computeIfAbsent("disable-connections-from-banned-ips", (a) -> "true"), true);
+        disableConnectionsForBannedIps = asBoolean((String) properties.computeIfAbsent("disable-connections-from-banned-ips", (a) -> "false"), false);
         honeypotWebhook = (String) properties.computeIfAbsent("honeypot-webhook-url", (a) -> "");
         honeypotName = (String) properties.computeIfAbsent("honeypot-name", (a) -> "");
         honeypotLogTCPConnections = asBoolean((String) properties.computeIfAbsent("honeypot-log-tcp-establish", (a) -> "true"), true);

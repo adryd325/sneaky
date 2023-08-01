@@ -42,16 +42,12 @@ public class Sneaky implements ModInitializer {
     }
 
     public static String stringifyAddress(SocketAddress address) {
-        String string = address.toString();
-        if (string.contains("/")) {
-            string = string.substring(string.indexOf(47) + 1);
-        }
-        if (string.contains(":")) {
-            string = string.substring(0, string.indexOf(58));
+        String string = ((InetSocketAddress) address).getAddress().getHostAddress();
+        if (string.startsWith("/")) {
+            string = string.substring(1);
         }
         return string;
     }
-
     public static boolean checkAllowConnection(SocketAddress address) {
         if (Config.INSTANCE.getDisableConnectionsForBannedIps() && server != null && server.getPlayerManager() != null && server.getPlayerManager().getIpBanList().isBanned(address)) {
             return false;
