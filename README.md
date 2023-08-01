@@ -17,8 +17,13 @@ The configuration is stored in config/sneakyserver/config.properties
 
 `rate-limit-new-connections`: (Default: true) Enables a rate limit for clients creating new connections.
 
-`new-connection-rate-limit`: (Default: 5) Connection limit over 15 seconds. If a client exceeds this limit new connections will be closed.
+`new-connection-rate-limit`: (Default: 7) Connection limit over 15 seconds. If a client exceeds this limit new connections will be closed.
 
+`disable-query-until-login`: (Default: false) shows the server as offline before the first time a player joins
+
+`disable-legacy-query`: (Default: true) disables legacy ping used by clients older than Minecraft 1.6
+
+`disable-connections-from-banned-ips`: (Default: false) closes connections from banned IPs before reaching login logic. May be incompatible with BungeeCord or Velocity
 
 ## Hiding ping data
 Sneaky hides server info by keeping a list of IP addresses of known players and their last join date, only allowing known players to receive the real server info, and appearing as an unconfigured server with no player activity to server scanners and players who have never joined. this feature is meant to be a no compromise alternative to vanilla's `hide-online-players` feature, allowing members of a server to see relevant information without leaking that information to scanners or un-whitelisted players (in the case of a whitelisted server)
