@@ -49,7 +49,7 @@ public class Config {
     private boolean disableConnectionsForBannedIps = false;
     private String honeypotWebhook = "";
     private String honeypotName = "";
-    private boolean honeypotLogTCPConnections;
+    private boolean honeypotLogTCPConnections = true;
 
     public void loadFromFile() {
         Properties properties = new Properties();
