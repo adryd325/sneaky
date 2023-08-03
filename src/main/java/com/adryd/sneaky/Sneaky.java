@@ -41,11 +41,16 @@ public class Sneaky implements ModInitializer {
         server = server1;
     }
 
+    public static MinecraftServer getMinecraftServer() {
+        return server;
+    }
+
     public static String stringifyAddress(SocketAddress address) {
         String string = ((InetSocketAddress) address).getAddress().getHostAddress();
         if (string.startsWith("/")) {
             string = string.substring(1);
         }
+        string = string.replace("%\\d+", "");
         return string;
     }
     public static boolean checkAllowConnection(SocketAddress address) {
@@ -87,7 +92,12 @@ public class Sneaky implements ModInitializer {
         IPList.INSTANCE.loadFromFile();
         Config.INSTANCE.loadFromFile();
         if (!Objects.equals(Config.INSTANCE.getHoneypotWebhook(), "")) {
-            honeypotLogger = new HoneypotLogger(Config.INSTANCE.getHoneypotWebhook(), Config.INSTANCE.getHoneypotName());
+            honeypotLogger = new HoneypotLogger(
+                    Config.INSTANCE.getHoneypotWebhook(),
+                    Config.INSTANCE.getHoneypotIngestServer(),
+                    Config.INSTANCE.getHoneypotIngestAuth(),
+                    Config.INSTANCE.getHoneypotName()
+            );
         }
     }
 

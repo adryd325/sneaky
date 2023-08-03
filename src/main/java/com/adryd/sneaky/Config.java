@@ -49,6 +49,8 @@ public class Config {
     private boolean disableConnectionsForBannedIps = false;
     private String honeypotWebhook = "";
     private String honeypotName = "";
+    private String honeypotIngestServer = "";
+    private String honeypotIngestAuth = "";
     private boolean honeypotLogTCPConnections = true;
 
     public void loadFromFile() {
@@ -73,6 +75,8 @@ public class Config {
         disableConnectionsForBannedIps = asBoolean((String) properties.computeIfAbsent("disable-connections-from-banned-ips", (a) -> "false"), false);
         honeypotWebhook = (String) properties.computeIfAbsent("honeypot-webhook-url", (a) -> "");
         honeypotName = (String) properties.computeIfAbsent("honeypot-name", (a) -> "");
+        honeypotIngestServer = (String) properties.computeIfAbsent("honeypot-ingest-server", (a) -> "");
+        honeypotIngestAuth = (String) properties.computeIfAbsent("honeypot-ingest-auth", (a) -> "");
         honeypotLogTCPConnections = asBoolean((String) properties.computeIfAbsent("honeypot-log-tcp-establish", (a) -> "true"), true);
 
         try (FileOutputStream stream = new FileOutputStream(FILE)) {
@@ -125,6 +129,14 @@ public class Config {
 
     public String getHoneypotName() {
         return honeypotName;
+    }
+
+    public String getHoneypotIngestServer() {
+        return honeypotIngestServer;
+    }
+
+    public String getHoneypotIngestAuth() {
+        return honeypotIngestAuth;
     }
 
     public boolean getHoneypotLogTCPConnections() {
