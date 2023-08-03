@@ -23,13 +23,12 @@ class MixinServerLoginNetworkHandler {
     private ClientConnection connection;
 
     @Shadow
-    private @Nullable GameProfile profile;
-
-    @Shadow
     @Final
     private MinecraftServer server;
 
-    @Inject(method = "acceptPlayer", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;addToServer(Lnet/minecraft/server/network/ServerPlayerEntity;)V", shift = At.Shift.AFTER))
+    @Shadow private @Nullable GameProfile field_45029;
+
+    @Inject(method = "method_52419", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/ServerLoginNetworkHandler;method_52420(Lcom/mojang/authlib/GameProfile;)V", shift = At.Shift.AFTER))
     private void atSuccessfulJoin(CallbackInfo ci) {
         IPList.INSTANCE.addToIPList(this.connection.getAddress());
     }
@@ -39,7 +38,7 @@ class MixinServerLoginNetworkHandler {
         // Should get around the login spam from bots like shepan and such
         // Prevents logging client disconnections from users before they have authenticated
         if (Config.INSTANCE.getDontLogClientDisconnects()) {
-            if (this.profile == null || !this.profile.isComplete() && this.server.isOnlineMode()) {
+            if (this.field_45029 == null) {
                 ci.cancel();
             }
         }
@@ -50,7 +49,7 @@ class MixinServerLoginNetworkHandler {
         // I feel that this is a really gross way of doing this but oh well
         // Same as the above mixins but doesn't log serverside disconnections
         if (Config.INSTANCE.getDontLogServerDisconnects()) {
-            if (this.profile == null || !this.profile.isComplete() && this.server.isOnlineMode()) {
+            if (this.field_45029 == null) {
                 instance.info(template, connectionInfo, reason);
             }
         }

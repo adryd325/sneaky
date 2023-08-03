@@ -1,0 +1,5 @@
+accessWidener v1 named
+accessible method net/minecraft/network/LegacyQueryHandler method_52379 (Lnet/minecraft/class_8599;)Ljava/lang/String;
+accessible method net/minecraft/network/LegacyQueryHandler method_52382 (Lnet/minecraft/class_8599;)Ljava/lang/String;
+accessible method net/minecraft/network/LegacyQueryHandler method_52381 (Lio/netty/buffer/ByteBufAllocator;Ljava/lang/String;)Lio/netty/buffer/ByteBuf;
+accessible method net/minecraft/network/LegacyQueryHandler reply (Lio/netty/channel/ChannelHandlerContext;Lio/netty/buffer/ByteBuf;)V
