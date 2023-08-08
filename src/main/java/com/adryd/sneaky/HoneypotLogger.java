@@ -23,22 +23,20 @@ public class HoneypotLogger {
     private final String ingestServerAuth;
     private final String name;
     private final HttpClient httpClient;
+    private final Gson GSON = new Gson();
 
-    public HoneypotLogger(String webhook, String ingestServer, String ingestServerAuth, String name) {
-        try {
-            this.ingestServer = new URI(ingestServer);
-            this.webhook = new URI(webhook);
-        } catch (Exception ignored) {
-        }
+    public HoneypotLogger(URI webhook, String name) {
+        this(webhook, null, null, name);
+    }
+    public HoneypotLogger(URI webhook, URI ingestServer, String ingestServerAuth, String name) {
+        this.webhook = webhook;
+        this.ingestServer = ingestServer;
         this.ingestServerAuth = ingestServerAuth;
         this.name = name;
         this.httpClient = HttpClient.newHttpClient();
     }
 
     private void sendWebhook(String string) {
-        if (this.webhook == null) {
-            return;
-        }
         CompletableFuture.runAsync(() -> {
             try {
                 JsonObject object = new JsonObject();
@@ -46,7 +44,7 @@ public class HoneypotLogger {
                 HttpRequest req = HttpRequest.newBuilder()
                         .uri(this.webhook)
                         .header("Content-Type", "application/json")
-                        .method("POST", HttpRequest.BodyPublishers.ofString(object.getAsString()))
+                        .method("POST", HttpRequest.BodyPublishers.ofString(GSON.toJson(object)))
                         .build();
                 this.httpClient.send(req, HttpResponse.BodyHandlers.discarding());
             } catch (Exception ignored) {
@@ -59,7 +57,6 @@ public class HoneypotLogger {
         }
         CompletableFuture.runAsync(() -> {
             try {
-
                 MinecraftServer server = Sneaky.getMinecraftServer();
                 InetSocketAddress inetSocketAddress = (InetSocketAddress) connection.getAddress();
                 JsonObject object = new JsonObject();
@@ -81,7 +78,7 @@ public class HoneypotLogger {
                         .uri(this.ingestServer)
                         .header("Authorization", "Basic " + this.ingestServerAuth)
                         .header("Content-Type", "application/json")
-                        .method("POST", HttpRequest.BodyPublishers.ofString(object.getAsString()))
+                        .method("POST", HttpRequest.BodyPublishers.ofString(GSON.toJson(object)))
                         .build();
                 this.httpClient.send(req, HttpResponse.BodyHandlers.discarding());
             } catch (Exception ignored) {

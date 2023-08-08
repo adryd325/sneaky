@@ -9,9 +9,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
+import java.net.*;
 import java.util.HashMap;
 import java.util.Objects;
 
@@ -91,13 +89,22 @@ public class Sneaky implements ModInitializer {
         IPList.INSTANCE.migrateConfig();
         IPList.INSTANCE.loadFromFile();
         Config.INSTANCE.loadFromFile();
-        if (!Objects.equals(Config.INSTANCE.getHoneypotWebhook(), "")) {
-            honeypotLogger = new HoneypotLogger(
-                    Config.INSTANCE.getHoneypotWebhook(),
-                    Config.INSTANCE.getHoneypotIngestServer(),
-                    Config.INSTANCE.getHoneypotIngestAuth(),
-                    Config.INSTANCE.getHoneypotName()
-            );
+        try {
+            if (!Objects.equals(Config.INSTANCE.getHoneypotWebhook(), "") && !Objects.equals(Config.INSTANCE.getHoneypotIngestServer(), "")) {
+                honeypotLogger = new HoneypotLogger(
+                        new URI(Config.INSTANCE.getHoneypotWebhook()),
+                        new URI(Config.INSTANCE.getHoneypotIngestServer()),
+                        Config.INSTANCE.getHoneypotIngestAuth(),
+                        Config.INSTANCE.getHoneypotName()
+                );
+            } else {
+                honeypotLogger = new HoneypotLogger(
+                        new URI(Config.INSTANCE.getHoneypotWebhook()),
+                        Config.INSTANCE.getHoneypotName()
+                );
+            }
+        } catch (URISyntaxException e) {
+            LOGGER.error("Failed to set up honeypot logger: ", e);
         }
     }
 
