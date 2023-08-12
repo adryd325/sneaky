@@ -25,7 +25,7 @@ public class MixinServerHandshakeNetworkHandler {
     @Final
     private static Text IGNORING_STATUS_REQUEST_MESSAGE;
 
-    @Inject(method = "onHandshake", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;setState(Lnet/minecraft/network/NetworkState;)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD)
+    @Inject(method = "onHandshake", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/ClientConnection;setState(Lnet/minecraft/network/NetworkState;)V", ordinal = 1), locals = LocalCapture.CAPTURE_FAILHARD, cancellable = true)
     private void acceptsQuery(HandshakeC2SPacket packet, CallbackInfo ci) {
         if (Config.INSTANCE.getDisableAllPingsUntilLogin() && !IPList.INSTANCE.canPing(this.connection.getAddress())) {
             this.connection.disconnect(IGNORING_STATUS_REQUEST_MESSAGE);
