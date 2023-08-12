@@ -1,9 +1,9 @@
 package com.adryd.sneaky.util;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.class_8599;
+import net.minecraft.network.QueryableServer;
 
-public class LegacyPingMetadata implements class_8599 {
+public class LegacyPingMetadata implements QueryableServer {
     @Override
     public String getServerMotd() {
         return "A Minecraft Server";
