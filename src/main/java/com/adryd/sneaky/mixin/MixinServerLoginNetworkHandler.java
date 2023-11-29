@@ -20,11 +20,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 class MixinServerLoginNetworkHandler {
     @Shadow
     @Final
-    private ClientConnection connection;
+    ClientConnection connection;
 
     @Shadow
     @Final
-    private MinecraftServer server;
+    MinecraftServer server;
 
     @Shadow
     @Nullable

@@ -25,7 +25,7 @@ import java.util.Locale;
 @Mixin(LegacyQueryHandler.class)
 public abstract class MixinLegacyQueryHandler extends ChannelInboundHandlerAdapter {
     @Shadow
-    protected static void reply(ChannelHandlerContext ctx, ByteBuf buf) {
+    private static void reply(ChannelHandlerContext ctx, ByteBuf buf) {
     }
 
     @Shadow
@@ -33,34 +33,17 @@ public abstract class MixinLegacyQueryHandler extends ChannelInboundHandlerAdapt
     private QueryableServer server;
 
     @Shadow
-    protected static ByteBuf createBuf(ByteBufAllocator allocator, String string) {
+    private static ByteBuf createBuf(ByteBufAllocator allocator, String string) {
         return null;
     }
 
     @Shadow
-    protected static String getResponse(QueryableServer server) {
+    private static String getResponse(QueryableServer server) {
         return null;
     }
 
     @Unique
     private final QueryableServer sneakyMetadata = new LegacyPingMetadata();
-
-    @Unique
-    private String get13PingData(SocketAddress addr) {
-        ;
-        if (Config.INSTANCE.getHideServerPingData() && !IPList.INSTANCE.canPing(addr)) {
-            return String.format(Locale.ROOT, "%s§%d§%d", "A Minecraft Server", 0, 20);
-        }
-        return String.format(Locale.ROOT, "%s§%d§%d", this.server.getServerMotd(), this.server.getCurrentPlayerCount(), this.server.getMaxPlayerCount());
-    }
-
-    @Unique
-    private String get14to16PingData(SocketAddress addr) {
-        if (Config.INSTANCE.getHideServerPingData() && !IPList.INSTANCE.canPing(addr)) {
-            return String.format(Locale.ROOT, "§1\u0000%d\u0000%s\u0000%s\u0000%d\u0000%d", 127, this.server.getVersion(), "A Minecraft Server", 0, 20);
-        }
-        return String.format(Locale.ROOT, "§1\u0000%d\u0000%s\u0000%s\u0000%d\u0000%d", 127, this.server.getVersion(), this.server.getServerMotd(), this.server.getCurrentPlayerCount(), this.server.getMaxPlayerCount());
-    }
 
     @Inject(method = "channelRead", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/handler/LegacyQueryHandler;getResponseFor1_2(Lnet/minecraft/network/QueryableServer;)Ljava/lang/String;"))
     private void send13Ping(ChannelHandlerContext ctx, Object msg, CallbackInfo ci) {
