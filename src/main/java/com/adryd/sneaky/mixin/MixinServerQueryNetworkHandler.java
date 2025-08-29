@@ -23,7 +23,7 @@ public class MixinServerQueryNetworkHandler {
     private ServerMetadata metadata;
 
     @Unique
-    private ServerMetadata sneakyMetadata = new ServerMetadata(
+    private final ServerMetadata sneakyMetadata = new ServerMetadata(
             Text.of("A Minecraft Server"),
             Optional.of(new ServerMetadata.Players(20, 0, List.of())),
             Optional.of(ServerMetadata.Version.create()),

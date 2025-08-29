@@ -11,7 +11,7 @@ public class LegacyPingMetadata implements QueryableServer {
 
     @Override
     public String getVersion() {
-        return SharedConstants.getGameVersion().getName();
+        return SharedConstants.getGameVersion().name();
     }
 
     @Override

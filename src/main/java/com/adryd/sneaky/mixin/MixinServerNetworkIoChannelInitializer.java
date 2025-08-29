@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(targets = {"net.minecraft.server.ServerNetworkIo$1"})
-public class MixinServerNetworkIoChannelInitialiser {
+public class MixinServerNetworkIoChannelInitializer {
     @Inject(method = "initChannel", at = @At("HEAD"), cancellable = true)
     private void beforeAssignNetworkHandler(Channel channel, CallbackInfo ci) {
         if (!Sneaky.checkAllowConnection(channel.remoteAddress())) {

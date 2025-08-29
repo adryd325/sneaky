@@ -10,7 +10,7 @@
     "MixinServerHandshakeNetworkHandler",
     "MixinServerLoginNetworkHandler",
     "MixinServerLoginNetworkHandlerAuthThread",
-    "MixinServerNetworkIoChannelInitialiser",
+    "MixinServerNetworkIoChannelInitializer",
     "MixinServerQueryNetworkHandler"
   ],
   "client": [
