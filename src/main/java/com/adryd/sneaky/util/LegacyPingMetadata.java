@@ -1,26 +1,26 @@
 package com.adryd.sneaky.util;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.network.QueryableServer;
+import net.minecraft.server.ServerInfo;
 
-public class LegacyPingMetadata implements QueryableServer {
+public class LegacyPingMetadata implements ServerInfo {
     @Override
-    public String getServerMotd() {
+    public String getMotd() {
         return "A Minecraft Server";
     }
 
     @Override
-    public String getVersion() {
-        return SharedConstants.getGameVersion().name();
+    public String getServerVersion() {
+        return SharedConstants.getCurrentVersion().name();
     }
 
     @Override
-    public int getCurrentPlayerCount() {
+    public int getPlayerCount() {
         return 0;
     }
 
     @Override
-    public int getMaxPlayerCount() {
+    public int getMaxPlayers() {
         return 20;
     }
 }

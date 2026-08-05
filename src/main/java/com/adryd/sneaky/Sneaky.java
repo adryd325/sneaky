@@ -47,7 +47,7 @@ public class Sneaky implements ModInitializer {
         return string;
     }
     public static boolean checkAllowConnection(SocketAddress address) {
-        if (Config.INSTANCE.getDisableConnectionsForBannedIps() && server != null && server.getPlayerManager() != null && server.getPlayerManager().getIpBanList().isBanned(address)) {
+        if (Config.INSTANCE.getDisableConnectionsForBannedIps() && server != null && server.getPlayerList() != null && server.getPlayerList().getIpBans().isBanned(address)) {
             return false;
         }
         if (!Config.INSTANCE.getRateLimitNewConnections()) return true;

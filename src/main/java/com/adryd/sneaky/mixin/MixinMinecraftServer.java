@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftServer.class)
 public class MixinMinecraftServer {
-    @Inject(method = "save", at = @At("HEAD"))
+    @Inject(method = "saveAllChunks", at = @At("HEAD"))
     private void saveIPListAutoSave(boolean suppressLogs, boolean flush, boolean force, CallbackInfoReturnable<Boolean> cir) {
         IPList.INSTANCE.saveToFile(false);
     }

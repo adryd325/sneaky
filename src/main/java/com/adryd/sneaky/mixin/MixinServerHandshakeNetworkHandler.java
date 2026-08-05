@@ -2,22 +2,22 @@ package com.adryd.sneaky.mixin;
 
 import com.adryd.sneaky.Config;
 import com.adryd.sneaky.IPList;
-import net.minecraft.network.ClientConnection;
+import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerHandshakeNetworkHandler;
-import net.minecraft.text.Text;
+import net.minecraft.server.network.ServerHandshakePacketListenerImpl;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-@Mixin(ServerHandshakeNetworkHandler.class)
+@Mixin(ServerHandshakePacketListenerImpl.class)
 public class MixinServerHandshakeNetworkHandler {
 
     @Shadow
     @Final
-    private ClientConnection connection;
+    private Connection connection;
 
     @Shadow
     @Final
@@ -25,12 +25,12 @@ public class MixinServerHandshakeNetworkHandler {
 
     @Shadow
     @Final
-    private static Text IGNORING_STATUS_REQUEST_MESSAGE;
+    private static Component IGNORE_STATUS_REASON;
 
-    @Redirect(method = "onHandshake", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;acceptsStatusQuery()Z"))
+    @Redirect(method = "handleIntention", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/MinecraftServer;repliesToStatus()Z"))
     private boolean acceptsQuery(MinecraftServer instance) {
-        if (this.server.acceptsStatusQuery()) {
-            if (Config.INSTANCE.getDisableAllPingsUntilLogin() && !IPList.INSTANCE.canPing(this.connection.getAddress())) {
+        if (this.server.repliesToStatus()) {
+            if (Config.INSTANCE.getDisableAllPingsUntilLogin() && !IPList.INSTANCE.canPing(this.connection.getRemoteAddress())) {
                 return false;
             }
             return true;
