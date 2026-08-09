@@ -7,9 +7,6 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.ByteBufAllocator;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
-import net.minecraft.network.QueryableServer;
-import net.minecraft.network.handler.LegacyQueryHandler;
-import net.minecraft.server.ServerNetworkIo;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,51 +16,51 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.net.SocketAddress;
-import java.util.Locale;
+import net.minecraft.server.ServerInfo;
+import net.minecraft.server.network.LegacyQueryHandler;
 
 @Mixin(LegacyQueryHandler.class)
 public abstract class MixinLegacyQueryHandler extends ChannelInboundHandlerAdapter {
     @Shadow
-    private static void reply(ChannelHandlerContext ctx, ByteBuf buf) {
+    private static void sendFlushAndClose(ChannelHandlerContext ctx, ByteBuf buf) {
     }
 
     @Shadow
     @Final
-    private QueryableServer server;
+    private ServerInfo server;
 
     @Shadow
-    private static ByteBuf createBuf(ByteBufAllocator allocator, String string) {
+    private static ByteBuf createLegacyDisconnectPacket(ByteBufAllocator allocator, String string) {
         return null;
     }
 
     @Shadow
-    private static String getResponse(QueryableServer server) {
+    private static String createVersion1Response(ServerInfo server) {
         return null;
     }
 
     @Unique
-    private final QueryableServer sneakyMetadata = new LegacyPingMetadata();
+    private final ServerInfo sneakyMetadata = new LegacyPingMetadata();
 
-    @Inject(method = "channelRead", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/handler/LegacyQueryHandler;getResponseFor1_2(Lnet/minecraft/network/QueryableServer;)Ljava/lang/String;"))
+    @Inject(method = "channelRead", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/LegacyQueryHandler;createVersion0Response(Lnet/minecraft/server/ServerInfo;)Ljava/lang/String;"))
     private void send13Ping(ChannelHandlerContext ctx, Object msg, CallbackInfo ci) {
-        QueryableServer pingData = this.sneakyMetadata;
+        ServerInfo pingData = this.sneakyMetadata;
         if (Config.INSTANCE.getHideServerPingData() && IPList.INSTANCE.canPing(ctx.channel().remoteAddress())) {
             pingData = this.server;
         }
-        reply(ctx, createBuf(ctx.alloc(), getResponse(pingData)));
+        sendFlushAndClose(ctx, createLegacyDisconnectPacket(ctx.alloc(), createVersion1Response(pingData)));
     }
 
-    @Inject(method = "channelRead", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/handler/LegacyQueryHandler;getResponse(Lnet/minecraft/network/QueryableServer;)Ljava/lang/String;"))
+    @Inject(method = "channelRead", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/LegacyQueryHandler;createVersion1Response(Lnet/minecraft/server/ServerInfo;)Ljava/lang/String;"))
     private void send14to16Ping(ChannelHandlerContext ctx, Object msg, CallbackInfo ci) {
-        QueryableServer pingData = this.sneakyMetadata;
+        ServerInfo pingData = this.sneakyMetadata;
         if (Config.INSTANCE.getHideServerPingData() && IPList.INSTANCE.canPing(ctx.channel().remoteAddress())) {
             pingData = this.server;
         }
-        reply(ctx, createBuf(ctx.alloc(), getResponse(pingData)));
+        sendFlushAndClose(ctx, createLegacyDisconnectPacket(ctx.alloc(), createVersion1Response(pingData)));
     }
 
-    @Redirect(method = "channelRead", at = @At(value = "INVOKE", target = "Lnet/minecraft/network/handler/LegacyQueryHandler;reply(Lio/netty/channel/ChannelHandlerContext;Lio/netty/buffer/ByteBuf;)V"))
+    @Redirect(method = "channelRead", at = @At(value = "INVOKE", target = "Lnet/minecraft/server/network/LegacyQueryHandler;sendFlushAndClose(Lio/netty/channel/ChannelHandlerContext;Lio/netty/buffer/ByteBuf;)V"))
     private void noop(ChannelHandlerContext channelHandlerContext, ByteBuf byteBuf) {
         // Do nothing
     }

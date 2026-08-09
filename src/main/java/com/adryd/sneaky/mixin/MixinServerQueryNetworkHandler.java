@@ -2,10 +2,6 @@ package com.adryd.sneaky.mixin;
 
 import com.adryd.sneaky.Config;
 import com.adryd.sneaky.IPList;
-import net.minecraft.network.ClientConnection;
-import net.minecraft.server.ServerMetadata;
-import net.minecraft.server.network.ServerQueryNetworkHandler;
-import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.*;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,36 +9,40 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
 import java.util.Optional;
+import net.minecraft.network.Connection;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.status.ServerStatus;
+import net.minecraft.server.network.ServerStatusPacketListenerImpl;
 
-@Mixin(ServerQueryNetworkHandler.class)
+@Mixin(ServerStatusPacketListenerImpl.class)
 public class MixinServerQueryNetworkHandler {
 
     @Mutable
     @Shadow
     @Final
-    private ServerMetadata metadata;
+    private ServerStatus status;
 
     @Unique
-    private final ServerMetadata sneakyMetadata = new ServerMetadata(
-            Text.of("A Minecraft Server"),
-            Optional.of(new ServerMetadata.Players(20, 0, List.of())),
-            Optional.of(ServerMetadata.Version.create()),
+    private final ServerStatus sneakyMetadata = new ServerStatus(
+            Component.nullToEmpty("A Minecraft Server"),
+            Optional.of(new ServerStatus.Players(20, 0, List.of())),
+            Optional.of(ServerStatus.Version.current()),
             Optional.empty(),
             true
     );
 
     @Inject(method = "<init>", at = @At("TAIL"))
-    private void swapServerInfo(ServerMetadata metadata, ClientConnection connection, CallbackInfo ci) {
-        if (!IPList.INSTANCE.canPing(connection.getAddress())) {
+    private void swapServerInfo(ServerStatus metadata, Connection connection, CallbackInfo ci) {
+        if (!IPList.INSTANCE.canPing(connection.getRemoteAddress())) {
             if (Config.INSTANCE.getHideServerPingData()) {
-                this.metadata = sneakyMetadata;
+                this.status = sneakyMetadata;
             } else if (Config.INSTANCE.getOnlyHidePlayerList()) {
-                this.metadata = new ServerMetadata(
-                        this.metadata.description(),
-                        Optional.of(new ServerMetadata.Players(20, 0, List.of())),
-                        this.metadata.version(),
-                        this.metadata.favicon(),
-                        this.metadata.secureChatEnforced()
+                this.status = new ServerStatus(
+                        this.status.description(),
+                        Optional.of(new ServerStatus.Players(20, 0, List.of())),
+                        this.status.version(),
+                        this.status.favicon(),
+                        this.status.enforcesSecureChat()
                 );
             }
         }
